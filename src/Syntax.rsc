@@ -1,5 +1,6 @@
 module Syntax
 
+
 extend lang::std::Layout;
 extend lang::std::Id;
 
@@ -8,7 +9,7 @@ extend lang::std::Id;
  */
 
 start syntax Form 
-  = "form" Id "{" Question* "}"; 
+  = "form" Id id "{" Question* questions "}"; 
 
 syntax Question
   = question:			Str Id ":" Type
@@ -19,10 +20,10 @@ syntax Question
   ; 
 
 syntax Expr 
-  = Id \ "true" \ "false" // true/false are reserved keywords.
-  | literal: Bool | Int | String
-  | parentheses: "(" Expr ")"
-  > right not:             "!" Expr e
+  = id: Id \ "true" \ "false" // true/false are reserved keywords.
+  | literal: Literal
+  | bracket parentheses:   "(" Expr ")"
+  > right not:             "!" Expr
   > left (
            mul:     Expr l "*" Expr r |
            div:     Expr l "/" Expr r
@@ -60,10 +61,15 @@ lexical Str = [\"] ![\"]* [\"];
 lexical Int = [0-9]+;
 
 lexical Bool
-	= "true"
-	| "false"
-	;
+  = "true"
+  | "false"
+  ;
 
+lexical Literal
+  = Str
+  | Int
+  | Bool
+  ;
 
 
 // http://tutor.rascal-mpl.org/Rascal/Declarations/SyntaxDefinition/Disambiguation/Priority/Priority.html

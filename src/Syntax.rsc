@@ -15,8 +15,8 @@ syntax Question
   = question:			Str Id ":" Type
   | computed_question:	Str Id ":" Type "=" Expr
   | block:				"{" Question* "}"
-  | if_then_else:		"if" "(" Expr ")" Question "else" Question 
   | if_then:			"if" "(" Expr ")" Question
+  | if_then_else:		"if" "(" Expr ")" Question "else" Question 
   ; 
 
 syntax Expr 
@@ -39,7 +39,7 @@ syntax Expr
            geq:     Expr l "\>=" Expr r
          )
   > left (
-           equal:   Expr l "==" Expr r | 
+           eq:      Expr l "==" Expr r | 
            neq:     Expr l "!=" Expr r
          )
   > left (

@@ -12,7 +12,7 @@ data AForm(loc src = |tmp:///|)
   ; 
 
 data AQuestion(loc src = |tmp:///|)
-  = question(str description, AId id, AType questionType, AExpr expr = empty())
+  = question(str label, AId id, AType questionType, AExpr expr = empty())
   | block(list[AQuestion] questions)
   | if_then(AExpr condition, AQuestion ifTrue)
   | if_then_else(AExpr condition, AQuestion ifTrue, AQuestion ifFalse)
@@ -49,13 +49,13 @@ data AId(loc src = |tmp:///|)
   ;
 
 data AType(loc src = |tmp:///|)
-  = boolean()
-  | integer()
+  = integer()
+  | boolean()
   | string()
   ;
 
 data ALiteral
-  = string(str s)
-  | integer(int i)
+  = integer(int i)
   | boolean(bool b)
+  | string(str s)
   ;

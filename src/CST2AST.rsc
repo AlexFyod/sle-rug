@@ -26,11 +26,11 @@ AForm cst2ast(start[Form] sf) {
 
 AQuestion cst2ast(Question q) {
   switch (q) {
-    case "question"(description, name, questionType):
-      return question("<description>", id("<name>"), cst2ast(questionType), src=q@\loc);
+    case "question"(label, name, questionType):
+      return question("<label>", id("<name>"), cst2ast(questionType), src=q@\loc);
       
-    case "computed_question"(description, name, questionType, expr):
-      return question("<description>", id("<name>"), cst2ast(questionType), expr = cst2ast(expr), src=q@\loc);
+    case "computed_question"(label, name, questionType, expr):
+      return question("<label>", id("<name>"), cst2ast(questionType), expr = cst2ast(expr), src=q@\loc);
       
     case "block"(Question* questions):
       return block([cst2ast(question) | question <- questions], src=q@\loc);

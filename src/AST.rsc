@@ -23,6 +23,8 @@ data AExpr(loc src = |tmp:///|)
   | ref(AId id)
   | literal(ALiteral l)
   
+  | parentheses(AExpr e)
+  
   | not(AExpr expr)
   
   | mul(AExpr l, AExpr r)

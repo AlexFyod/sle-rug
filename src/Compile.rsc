@@ -28,14 +28,22 @@ HTML5Node form2html(AForm f) {
            head(
              title(f.name),
              meta(charset("utf-8")),
+             meta(name("viewport"), content("width=device-width, initial-scale=1, shrink-to-fit=no")),
+         
+             link(\rel("stylesheet"), href("https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css")),
              
-             link(\rel("stylesheet"), href("https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css")),
-             script(src("https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js")),
-             script(src("https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js")),
+             
+             script(src("https://code.jquery.com/jquery-3.3.1.slim.min.js")),
+             script(src("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js")),
+             script(src("https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js")),
              script(src(f.src[extension="js"].file))
            ),
            body(
-             
+             div(class("list-group w-25 mw-100 p-3"),
+               div(
+                 [AQuestion2html(q) | q <- f.questions]
+               )
+             )
            )
          );
 }
@@ -44,7 +52,19 @@ HTML5Node AQuestion2html(AQuestion q) {
   switch (q) {
     case question(label, id, questionType, expr = AExpr e):
       return question2html(q);
-      
+    case block(questions):
+      return div(
+               [AQuestion2html(question) | question <- questions]
+             );
+    case if_then(condition, ifTrue):
+      return div(id("<condition.id.name>"), class("d-none"),
+               AQuestion2html(ifTrue)          
+             );
+    case if_then_else(condition, ifTrue, ifFalse):
+      return div(id("<condition.id.name>"), class("d-none"),
+               AQuestion2html(ifTrue),
+               AQuestion2html(ifFalse)
+             );
     default: return div();
   }
 }
@@ -52,20 +72,17 @@ HTML5Node AQuestion2html(AQuestion q) {
 HTML5Node question2html(AQuestion q) {
   HTML5Node inputField = input(class("form-control"),
                                inputType(q.questionType),
-                               name("<q.id.name>"),
-                               disabled(q.expr == empty()
-                                        ? "enabled"
-                                        : "disabled"
-                                       )
+                               name("<q.id.name>-input")
                              );
-  
-  return form(
-    div(class("form-group"),
-      label(\for("<q.id.name>"), q.label),
-      inputField,
-      br()
-    )
-  );
+  return div(class("list-group-item"),
+              form(id("<q.id.name>"),
+                div(class("form-group"),
+                  label(\for("<q.id.name>-input"), q.label),
+                  inputField,
+                  br()
+                )
+              )
+         );
 }
 
 HTML5Attr inputType(AType questionType) {

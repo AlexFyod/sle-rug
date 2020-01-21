@@ -21,9 +21,9 @@ data AQuestion(loc src = |tmp:///|)
 data AExpr(loc src = |tmp:///|)
   = empty() // Used to generalize computed and non-computed question to just "question" via setting the default value for expr.
   | ref(AId id)
-  | literal(ALiteral l)
+  | literal(ALiteral literal)
   
-  | parentheses(AExpr e)
+  | parentheses(AExpr expr)
   
   | not(AExpr expr)
   

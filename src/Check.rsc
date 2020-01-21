@@ -4,6 +4,10 @@ import AST;
 import Resolve;
 import Message; // see standard library
 
+
+import IO;
+import List;
+
 data Type
   = tint()
   | tbool()
@@ -45,8 +49,8 @@ alias TEnv = rel[loc def, str name, str label, Type \type];
 // To avoid recursively traversing the form, use the `visit` construct
 // or deep match (e.g., `for (/question(...) := f) {...}` ) 
 TEnv collect(AForm f)
-  = {  <def, name, description, toType(questionType)>
-     | /question(str description, id(name), AType questionType, expr = AExpr e, src = loc def) := f
+  = {  <id.src, id.name, description, toType(questionType)>
+     | /question(str description, AId id, AType questionType, expr = AExpr e, src = loc def) := f
     }
   ;
 
@@ -65,14 +69,16 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
       return
         {  error ("Question <id.name> of type <questionType> is already defined in <env>", location)
          | <env, name, _, questionTypeFromEnv> <- tenv,
-           location != env,
+           name == id.name,
+           location == env,
            toType(questionType) != questionTypeFromEnv
         }
         +
-        {  warning("Question with label {label} is already defined in <env>", location)
+        {  warning("Question with label <label> is already defined in <env>", location)
          | <env, name, labelFromEnv, _> <- tenv,
-           location != env,
-           id.name != name
+           location == env,
+           id.name != name,
+           label == labelFromEnv
         }
         +
         {  error("Declared type of computed question <id.name> does not match the type of expression", location)

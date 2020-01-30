@@ -4,6 +4,7 @@ import AST;
 import Resolve;
 import IO;
 import lang::html5::DOM; // see standard library
+import List;
 
 /*
  * Implement a compiler for QL to HTML and Javascript
@@ -71,8 +72,8 @@ HTML5Node AQuestion2html(AQuestion q) {
 
 HTML5Node question2html(AQuestion q) {
   HTML5Node inputField = input(class("form-control"),
-                               inputType(q.questionType),
-                               name("<q.id.name>-input")
+                               id("<q.id.name>-input"),
+                               inputType(q.questionType)
                              );
   return div(class("list-group-item"),
               form(id("<q.id.name>"),
@@ -94,8 +95,90 @@ HTML5Attr inputType(AType questionType) {
 	}
 }
 
+
+// JavaScript
+
 str form2js(AForm f) {
-  return "";
+  return
+"document.addEventListener(\'input\', function () {
+'	refresh();
+});
+refresh();
+
+function refresh() {
+'	<getVariables(f.questions)>
+}";
+}
+
+
+str getVariables(list[AQuestion] questions) {
+  list[str] variables = [
+    "let <id.name> = document.getElementById(\'<id.name>-input\').<getValue(t)>;"
+      | question(_, id, t, expr = empty()) <- questions
+  ];
+  variables += [""];
+  
+  variables += [
+    "let <id.name> = document.getElementById(\'<id.name>-input\');
+    <id.name>.disabled = true;"
+      | question(_, id, t, expr = e) <- questions, e != empty()
+  ];
+  return intercalate("\n", variables);
+}
+
+str getValue(AType t) {
+  switch (t) {
+    case integer():
+      return "value";
+    case boolean():
+      return "checked";
+    case string():
+      return "value";
+    default:
+      throw "Unknown type <t>";
+  }
+}
+
+str inputListener() {
+  return
+"document.addEventListener(\'input\', function () {
+'	refresh();
+});
+refresh();";
+}
+
+str question2js(AQuestion q) {
+  str conditional = "<q.id.name>";
+  switch (q) {
+  
+    case if_then(condition, ifTrue):
+      return
+"
+let <conditional>-true = document.getElementById(\'<ifTrue.id.name>\');
+if (<expr2js(condition)>) {
+'	<conditional>-true.classList.remove(\'d-none\');
+} else {
+	<conditional>-true.classList.add(\'d-none\');
+}";
+
+
+    case if_then_else(condition, ifTrue, ifFalse):
+      return 
+"
+let <conditional>-true = document.getElementById(\'<ifTrue.id.name>\');
+let <conditional>-false = document.getElementById(\'<ifFalse.id.name>\');
+if (<expr2js(condition)>) {
+	<conditional>-true.classList.remove(\'d-none\');
+	<conditional>-false.classList.add(\'d-none\');
+} else {
+	<conditional>-true.classList.add(\'d-none\');
+	<conditional>-false.classList.remove(\'d-none\');
+}";
+
+
+    default:
+      return "";
+  }
 }
 
 str expr2js(ALiteral l) {

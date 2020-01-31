@@ -36,8 +36,7 @@ HTML5Node form2html(AForm f) {
              
              script(src("https://code.jquery.com/jquery-3.3.1.slim.min.js")),
              script(src("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js")),
-             script(src("https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js")),
-             script(src(f.src[extension="js"].file))
+             script(src("https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"))
            ),
            body(
              div(class("list-group w-25 mw-100 p-3"),
@@ -45,7 +44,10 @@ HTML5Node form2html(AForm f) {
                  [AQuestion2html(q) | q <- f.questions]
                )
              )
-           )
+           ),
+          footer(
+            script(src(f.src[extension="js"].file))  
+          )
          );
 }
 
@@ -58,11 +60,11 @@ HTML5Node AQuestion2html(AQuestion q) {
                [AQuestion2html(question) | question <- questions]
              );
     case if_then(condition, ifTrue):
-      return div(id("<condition.id.name>"), class("d-none"),
+      return div(id("<condition.id.name>"),
                AQuestion2html(ifTrue)          
              );
     case if_then_else(condition, ifTrue, ifFalse):
-      return div(id("<condition.id.name>"), class("d-none"),
+      return div(id("<condition.id.name>"),
                AQuestion2html(ifTrue),
                AQuestion2html(ifFalse)
              );
@@ -75,8 +77,8 @@ HTML5Node question2html(AQuestion q) {
                                id("<q.id.name>-input"),
                                inputType(q.questionType)
                              );
-  return div(class("list-group-item"),
-              form(id("<q.id.name>"),
+  return div(class("list-group-item"), id("<q.id.name>-form"),
+              form(
                 div(class("form-group"),
                   label(\for("<q.id.name>-input"), q.label),
                   inputField,
@@ -105,23 +107,29 @@ str form2js(AForm f) {
 });
 refresh();
 
+
 function refresh() {
-'	<getVariables(f.questions)>
+'	<getVariables(f)>
+
+'	<intercalate("\n", [question2js(q, true) | q <- f.questions])>
 }";
 }
 
 
-str getVariables(list[AQuestion] questions) {
+str getVariables(AForm f) {
   list[str] variables = [
-    "let <id.name> = document.getElementById(\'<id.name>-input\').<getValue(t)>;"
-      | question(_, id, t, expr = empty()) <- questions
+"let <id.name>Form = document.getElementById(\'<id.name>-form\');
+let <id.name> = document.getElementById(\'<id.name>-input\').<getValue(t)>;\n"
+      | /question(_, id, t, expr = empty()) := f
   ];
   variables += [""];
   
   variables += [
-    "let <id.name> = document.getElementById(\'<id.name>-input\');
-    <id.name>.disabled = true;"
-      | question(_, id, t, expr = e) <- questions, e != empty()
+"let <id.name>Form = document.getElementById(\'<id.name>-form\');
+let <id.name> = document.getElementById(\'<id.name>-input\').<getValue(t)> = <expr2js(e)>;
+<id.name>.disabled = true;
+<id.name>.readOnly = true;"
+      | /question(_, id, t, expr = e) := f, e != empty()
   ];
   return intercalate("\n", variables);
 }
@@ -139,41 +147,37 @@ str getValue(AType t) {
   }
 }
 
-str inputListener() {
-  return
-"document.addEventListener(\'input\', function () {
-'	refresh();
-});
-refresh();";
-}
 
-str question2js(AQuestion q) {
-  str conditional = "<q.id.name>";
+str question2js(AQuestion q, bool visible) {
   switch (q) {
+  
+    case question(_, id, _, expr = e):
+      return "<id.name>Form.classList." + (visible ? "remove(\'d-none\')" : "add(\'d-none\');");
+      
+    case block(questions):
+      return "<intercalate("\n", [question2js(question, visible) | question <- questions])>";
+  
   
     case if_then(condition, ifTrue):
       return
-"
-let <conditional>-true = document.getElementById(\'<ifTrue.id.name>\');
-if (<expr2js(condition)>) {
-'	<conditional>-true.classList.remove(\'d-none\');
+"if (<expr2js(condition)>) {
+'	<question2js(ifTrue, true)>
 } else {
-	<conditional>-true.classList.add(\'d-none\');
-}";
+'	<question2js(ifTrue, false)>
+}
+";
 
 
     case if_then_else(condition, ifTrue, ifFalse):
-      return 
-"
-let <conditional>-true = document.getElementById(\'<ifTrue.id.name>\');
-let <conditional>-false = document.getElementById(\'<ifFalse.id.name>\');
-if (<expr2js(condition)>) {
-	<conditional>-true.classList.remove(\'d-none\');
-	<conditional>-false.classList.add(\'d-none\');
+      return
+"if (<expr2js(condition)>) {
+'	<question2js(ifTrue, true)>
+'	<question2js(ifFalse, false)>
 } else {
-	<conditional>-true.classList.add(\'d-none\');
-	<conditional>-false.classList.remove(\'d-none\');
-}";
+'	<question2js(ifTrue, false)>
+'	<question2js(ifFalse, true)>
+}
+";
 
 
     default:

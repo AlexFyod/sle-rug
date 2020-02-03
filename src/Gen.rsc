@@ -8,7 +8,6 @@ import AST;
 import CST2AST;
 import Resolve;
 import Check;
-import Eval;
 import Compile;
 import Transform;
 
@@ -49,6 +48,5 @@ CompileResult initql(loc file) {
     println(msgs);
   }
 
-  CompileResult result = <pt, ast, flat, res, env, msgs>;
   return <pt, ast, flat, res, env, msgs>;
 }

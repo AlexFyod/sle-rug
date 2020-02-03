@@ -5,9 +5,6 @@ import Resolve;
 import Message; // see standard library
 
 
-import IO;
-import List;
-
 data Type
   = tint()
   | tbool()
@@ -50,7 +47,7 @@ alias TEnv = rel[loc def, str name, str label, Type \type];
 // or deep match (e.g., `for (/question(...) := f) {...}` ) 
 TEnv collect(AForm f)
   = {  <id.src, id.name, description, toType(questionType)>
-     | /question(str description, AId id, AType questionType, expr = AExpr e, src = loc def) := f
+     | /question(str description, AId id, AType questionType, expr = _) := f
     }
   ;
 
@@ -98,7 +95,7 @@ set[Message] check(AExpr e, TEnv tenv, UseDef useDef) {
     case ref(AId x):
       return {error("Undeclared question", x.src) | useDef[x.src] == {}};
       
-    case not(AExpr expr, src = loc location):
+    case not(_, src = loc location):
       return checkUnaryBool(e, "!", location, tenv, useDef);
       
     case mul(AExpr l, AExpr r, src = loc location):
@@ -169,29 +166,29 @@ set[Message] checkBinaryBool(AExpr l, AExpr r, str operator, loc location, TEnv 
 Type typeOf(AExpr e, TEnv tenv, UseDef useDef) {
   switch (e) {
     case ref(id(_, src = loc u)):  
-      if (<u, loc d> <- useDef, <d, x, _, Type t> <- tenv) {
+      if (<u, loc d> <- useDef, <d, _, _, Type t> <- tenv) {
         return t;
       }
-    case literal(ALiteral l): return toType(l);
-      
-    case not(_):              return tbool();
-      
-    case mul(_, _):           return tint();
-    case div(_, _):           return tint();
-      
-    case add(_, _):           return tint();
-    case sub(_, _):           return tint();
-      
-    case greater(_, _):       return tbool();
-    case less(_, _):          return tbool();
-    case geq(_, _):           return tbool();
-    case leq(_, _):           return tbool();
-      
-    case eq(_, _):            return tbool();
-    case neq(_, _):           return tbool();
-    
-    case and(_, _):           return tbool();
-    case or(_, _):            return tbool();
+    //case literal(ALiteral l): return toType(l);
+    //  
+    //case not(_):              return tbool();
+    //  
+    //case mul(_, _):           return tint();
+    //case div(_, _):           return tint();
+    //  
+    //case add(_, _):           return tint();
+    //case sub(_, _):           return tint();
+    //  
+    //case greater(_, _):       return tbool();
+    //case less(_, _):          return tbool();
+    //case geq(_, _):           return tbool();
+    //case leq(_, _):           return tbool();
+    //  
+    //case eq(_, _):            return tbool();
+    //case neq(_, _):           return tbool();
+    //
+    //case and(_, _):           return tbool();
+    //case or(_, _):            return tbool();
   }
   return tunknown(); 
 }

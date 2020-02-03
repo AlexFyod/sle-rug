@@ -53,18 +53,16 @@ HTML5Node form2html(AForm f) {
 
 HTML5Node AQuestion2html(AQuestion q) {
   switch (q) {
-    case question(label, id, questionType, expr = AExpr e):
+    case question(_, _, _, expr = _):
       return question2html(q);
     case block(questions):
       return div(
                [AQuestion2html(question) | question <- questions]
              );
-    case if_then(condition, ifTrue):
-      return div(id("<ifTrue.id.name>"),
-               AQuestion2html(ifTrue)          
-             );
+    case if_then(_, ifTrue):
+      return AQuestion2html(ifTrue);
       
-    case if_then_else(condition, ifTrue, ifFalse):
+    case if_then_else(_, ifTrue, ifFalse):
       return div(
                  AQuestion2html(ifTrue),
                  AQuestion2html(ifFalse)
@@ -152,7 +150,7 @@ str getValue(AType t) {
 str question2js(AQuestion q, bool visible) {
   switch (q) {
   
-    case question(_, id, _, expr = e):
+    case question(_, id, _, expr = _):
       return "<id.name>Form.classList." + (visible ? "remove(\'d-none\')" : "add(\'d-none\');");
       
     case block(questions):

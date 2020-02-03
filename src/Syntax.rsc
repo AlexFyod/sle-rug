@@ -70,8 +70,3 @@ lexical Literal
   | Int
   | Bool
   ;
-
-
-// http://tutor.rascal-mpl.org/Rascal/Declarations/SyntaxDefinition/Disambiguation/Priority/Priority.html
-// http://tutor.rascal-mpl.org/Rascal/Rascal.html#/Rascal/Declarations/SyntaxDefinition/Disambiguation/Associativity/Associativity.html
-// https://overiq.com/c-programming-101/operator-precedence-and-associativity-in-c/

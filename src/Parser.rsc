@@ -28,8 +28,8 @@ Results parseQL(loc file) {
   env = collect(ast);
   messages = check(ast, env, res[2]);
   
-  errors = {e | e <- messages, e := error(_, _)};
-  warnings = {w | w <- messages, w := warning(_, _)};
+  errors = {e | e:error(_, _) <- messages};
+  warnings = {w | w:warning(_, _) <- messages};
   if (errors == {}) {
     if (warnings != {} ) {
       println("Warnings:");

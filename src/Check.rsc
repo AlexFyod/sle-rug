@@ -167,26 +167,26 @@ Type typeOf(AExpr e, TEnv tenv, UseDef useDef) {
       if (<u, loc d> <- useDef, <d, _, _, Type t> <- tenv) {
         return t;
       }
-    //case literal(ALiteral l): return toType(l);
-    //  
-    //case not(_):              return tbool();
-    //  
-    //case mul(_, _):           return tint();
-    //case div(_, _):           return tint();
-    //  
-    //case add(_, _):           return tint();
-    //case sub(_, _):           return tint();
-    //  
-    //case greater(_, _):       return tbool();
-    //case less(_, _):          return tbool();
-    //case geq(_, _):           return tbool();
-    //case leq(_, _):           return tbool();
-    //  
-    //case eq(_, _):            return tbool();
-    //case neq(_, _):           return tbool();
-    //
-    //case and(_, _):           return tbool();
-    //case or(_, _):            return tbool();
+    case literal(ALiteral l): return toType(l);
+      
+    case not(_):              return tbool();
+      
+    case mul(_, _):           return tint();
+    case div(_, _):           return tint();
+      
+    case add(_, _):           return tint();
+    case sub(_, _):           return tint();
+      
+    case greater(_, _):       return tbool();
+    case less(_, _):          return tbool();
+    case geq(_, _):           return tbool();
+    case leq(_, _):           return tbool();
+      
+    case eq(_, _):            return tbool();
+    case neq(_, _):           return tbool();
+    
+    case and(_, _):           return tbool();
+    case or(_, _):            return tbool();
   }
   return tunknown(); 
 }

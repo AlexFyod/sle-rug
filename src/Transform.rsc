@@ -31,6 +31,7 @@ import ParseTree;
  */
  
 AForm flatten(AForm f) {
+  f.questions = ([] | it + flatten(q, literal(boolean(true))) | q <- f.questions);
   return f;
 }
 
@@ -45,10 +46,10 @@ list[AQuestion] flatten(AQuestion q, AExpr globalCondition) {
     case block(list[AQuestion] qs):
       return ([] | it + flatten(question, globalCondition) | question <- qs);
     case if_then(AExpr condition, AQuestion ifTrue):
-      return flatten(ifTrue, and(condition, globalCondition));
+      return flatten(ifTrue, and(globalCondition, condition));
     case if_then_else(AExpr condition, AQuestion ifTrue, AQuestion ifFalse):
-      return flatten(ifTrue, and(condition, globalCondition))
-           + flatten(ifFalse, and(not(condition), globalCondition));
+      return flatten(ifTrue, and(globalCondition, condition))
+           + flatten(ifFalse, and(globalCondition, not(condition)));
     default:
       return [];
   }

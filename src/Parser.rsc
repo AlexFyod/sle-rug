@@ -1,4 +1,4 @@
-module Gen
+module Parser
 
 import ParseTree;
 import IO;

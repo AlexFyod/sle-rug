@@ -4,7 +4,6 @@ import AST;
 import Resolve;
 import Message; // see standard library
 
-
 data Type
   = tint()
   | tbool()
@@ -56,7 +55,6 @@ set[Message] check(AForm f, TEnv tenv, UseDef useDef)
   + ({} | it + check(expr, tenv, useDef)     | /AExpr expr := f)
   ;
 
-
 // - produce an error if there are declared questions with the same name but different types.
 // - duplicate labels should trigger a warning 
 // - the declared type computed questions should match the type of the expression.
@@ -64,7 +62,7 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
   switch (q) {
     case question(str label, AId id, AType questionType, expr = AExpr e, src = loc location):
       return
-        {  error ("Question <id.name> of type <questionType> is already defined in <env>", location)
+        {  error("Question <id.name> of type <questionType> is already defined in <env>", location)
          | <env, name, _, questionTypeFromEnv> <- tenv,
            name == id.name,
            location == env,

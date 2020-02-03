@@ -59,7 +59,7 @@ VEnv eval(AQuestion q, Input inp, VEnv venv) {
   // evaluate conditions for branching,
   // evaluate inp and computed questions to return updated VEnv
   switch (q) {
-    case question(label, id(name), questionType, expr = AExpr e):
+    case question(_, id(name), _, expr = AExpr e):
       if (e == empty()) {
         return venv + (name == inp.question
                        ? (name: inp.\value)

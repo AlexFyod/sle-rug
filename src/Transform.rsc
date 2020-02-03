@@ -31,8 +31,30 @@ import ParseTree;
  */
  
 AForm flatten(AForm f) {
-  return f; 
+  return f;
 }
+
+//AQuestion flatten(question(str label, AId id, AType questionType, AExpr expr)) {
+//  return if_then(boolean(true), question(label, id, questionType, expr));
+//}
+
+list[AQuestion] flatten(AQuestion q, AExpr globalCondition) {
+  switch (q) {
+    case question(_, _, _, expr = _):
+      return [if_then(globalCondition, q)];
+    case block(list[AQuestion] qs):
+      return ([] | it + flatten(question, globalCondition) | question <- qs);
+    case if_then(AExpr condition, AQuestion ifTrue):
+      return flatten(ifTrue, and(condition, globalCondition));
+    case if_then_else(AExpr condition, AQuestion ifTrue, AQuestion ifFalse):
+      return flatten(ifTrue, and(condition, globalCondition))
+           + flatten(ifFalse, and(not(condition), globalCondition));
+    default:
+      return [];
+  }
+}
+
+
 
 /* Rename refactoring:
  *

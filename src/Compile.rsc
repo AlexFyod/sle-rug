@@ -60,13 +60,14 @@ HTML5Node AQuestion2html(AQuestion q) {
                [AQuestion2html(question) | question <- questions]
              );
     case if_then(condition, ifTrue):
-      return div(id("<condition.id.name>"),
+      return div(id("<ifTrue.id.name>"),
                AQuestion2html(ifTrue)          
              );
+      
     case if_then_else(condition, ifTrue, ifFalse):
-      return div(id("<condition.id.name>"),
-               AQuestion2html(ifTrue),
-               AQuestion2html(ifFalse)
+      return div(
+                 AQuestion2html(ifTrue),
+                 AQuestion2html(ifFalse)
              );
     default: return div();
   }

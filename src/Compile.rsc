@@ -127,7 +127,7 @@ let <id.name> = document.getElementById(\'<id.name>-input\').<getValue(t)>;\n"
 "let <id.name>Form = document.getElementById(\'<id.name>-form\');
 let <id.name> = document.getElementById(\'<id.name>-input\').<getValue(t)> = <expr2js(e)>;
 <id.name>.disabled = true;
-<id.name>.readOnly = true;"
+<id.name>.readOnly = true;\n"
       | /question(_, id, t, expr = e) := f, e != empty()
   ];
   return intercalate("\n", variables);

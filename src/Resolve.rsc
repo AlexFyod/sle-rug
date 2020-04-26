@@ -25,10 +25,13 @@ alias RefGraph = tuple[
 RefGraph resolve(AForm f) = <us, ds, us o ds>
   when Use us := uses(f), Def ds := defs(f);
 
-Use uses(AForm f) {
-  return {}; 
-}
+// Visit all nodes that have ref(AId id), i.e. all AExpr nodes.
+Use uses(AForm f)
+  = {<source, name> | /ref(id(name), src = loc source) := f}
+  ;
 
-Def defs(AForm f) {
-  return {}; 
-}
+// Visit all questions, either computed or non-computed.
+// Achieved through generalization of "question" type.
+Def defs(AForm f)
+  = {<id.name, id.src> | /question(_, AId id, _) := f}
+  ;
